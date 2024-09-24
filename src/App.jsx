@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import NewProject from './components/NewProject.jsx';
 import NoProjectSelected from './components/NoProjectSelected.jsx';
@@ -6,11 +6,18 @@ import ProjectsSidebar from './components/ProjectsSidebar.jsx';
 import SelectedProject from './components/SelectedProject.jsx';
 
 function App() {
-  const [projectsState, setProjectsState] = useState({
-    selectedProjectId: undefined,
-    projects: [],
-    tasks: [],
+  const [projectsState, setProjectsState] = useState(() => {
+    // Retrieve projectsState from localStorage when the component is mounted
+    const savedState = localStorage.getItem('projectsState');
+    return savedState
+      ? JSON.parse(savedState)
+      : { selectedProjectId: undefined, projects: [], tasks: [] };
   });
+
+  // Save the current state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('projectsState', JSON.stringify(projectsState));
+  }, [projectsState]);
 
   function handleAddTask(text) {
     setProjectsState((prevState) => {
